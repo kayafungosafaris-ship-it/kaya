@@ -5,85 +5,160 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Portal - Kaya Fungo Tour & Safari</title>
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        .admin-box {
+            max-width: 500px;
+            margin: 60px auto;
+            padding: 30px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fff;
+            text-align: center;
+        }
+        .admin-box input, .admin-box textarea, .admin-box select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .admin-box button {
+            width: 100%;
+            padding: 12px;
+            background: #0d0d0d;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .hidden { display: none; }
+        .error { color: red; font-size: 14px; margin-top: 5px; }
+    </style>
 </head>
 <body>
+
     <header class="navbar">
         <div class="logo">
-            <h1>Kaya Fungo Safaris Admin Panel</h1>
+            <h1>Kaya Fungo Tour & Safari</h1>
         </div>
         <nav>
             <ul>
-                <li><a href="index.html">View Site</a></li>
+                <li><a href="index.html">View Main Site</a></li>
             </ul>
         </nav>
     </header>
 
-    <main class="admin-container">
-        <!-- Admin Login Form -->
-        <div id="login-section" class="form-card">
-            <h2>Administrator Login</h2>
-            <form id="admin-login-form">
-                <div class="form-group">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" placeholder="Enter username" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" placeholder="Enter password" required>
-                </div>
-                <button type="submit" class="submit-btn">Login</button>
+    <main>
+        <!-- 1. LOGIN FORM -->
+        <div id="login-section" class="admin-box">
+            <h2>Admin Login</h2>
+            <form id="loginForm">
+                <input type="text" id="username" placeholder="Username" required>
+                <input type="password" id="password" placeholder="Password" required>
+                <button type="submit">Login</button>
             </form>
-            <p id="login-error" class="error-msg"></p>
+            <p id="loginError" class="error" style="display:none;">Invalid credentials!</p>
         </div>
 
-        <!-- Authenticated Admin Control Panel -->
-        <div id="admin-panel" class="hidden">
-            <div class="admin-header">
-                <h2>Welcome, Admin</h2>
-                <button id="logout-btn" class="logout-btn">Logout</button>
-            </div>
+        <!-- 2. CONTROL PANEL (Hidden until logged in) -->
+        <div id="admin-panel" class="admin-box hidden">
+            <h2>Welcome, Admin</h2>
+            <button onclick="logoutAdmin()" style="background:#d9534f; margin-bottom:20px;">Logout</button>
 
-            <!-- Blog Post Creator -->
-            <section class="form-card">
-                <h3>Add New Blog Post</h3>
-                <form id="add-blog-form">
-                    <div class="form-group">
-                        <label for="blog-title">Blog Title</label>
-                        <input type="text" id="blog-title" placeholder="e.g. 3 Days Safari to Tsavo East" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="blog-content">Post Content</label>
-                        <textarea id="blog-content" rows="6" placeholder="Write your blog content here..." required></textarea>
-                    </div>
-                    <button type="submit" class="submit-btn">Publish Blog</button>
-                </form>
-            </section>
+            <hr style="margin: 20px 0;">
 
-            <!-- Media Manager (Photos & Videos) -->
-            <section class="form-card">
-                <h3>Upload Photos & Videos</h3>
-                <form id="upload-media-form">
-                    <div class="form-group">
-                        <label for="media-type">Media Type</label>
-                        <select id="media-type">
-                            <option value="image">Image URL</option>
-                            <option value="video">Video URL / Embed Link</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="media-url">Resource URL</label>
-                        <input type="text" id="media-url" placeholder="https://example.com/photo.jpg" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="media-caption">Caption</label>
-                        <input type="text" id="media-caption" placeholder="Describe the photo/video">
-                    </div>
-                    <button type="submit" class="submit-btn">Add to Gallery</button>
-                </form>
-            </section>
+            <h3>Add New Blog Post</h3>
+            <form id="addBlogForm">
+                <input type="text" id="blogTitle" placeholder="Blog Title" required>
+                <textarea id="blogContent" rows="4" placeholder="Write blog post here..." required></textarea>
+                <button type="submit">Publish Blog</button>
+            </form>
+
+            <hr style="margin: 20px 0;">
+
+            <h3>Upload Photos & Videos</h3>
+            <form id="addMediaForm">
+                <select id="mediaType">
+                    <option value="image">Photo URL</option>
+                    <option value="video">Video URL</option>
+                </select>
+                <input type="text" id="mediaUrl" placeholder="Paste Image/Video Link" required>
+                <input type="text" id="mediaCaption" placeholder="Caption/Description">
+                <button type="submit">Add to Gallery</button>
+            </form>
         </div>
     </main>
 
-    <script src="js/admin.js"></script>
+    <!-- SIMPLE HARDCODED AUTHENTICATION SCRIPT -->
+    <script>
+        const HARDCODED_USER = "admin";
+        const HARDCODED_PASS = "Kishenga";
+
+        const loginSection = document.getElementById('login-section');
+        const adminPanel = document.getElementById('admin-panel');
+        const loginError = document.getElementById('loginError');
+
+        // Check if session is active
+        if (localStorage.getItem('isAdminLoggedIn') === 'true') {
+            showPanel();
+        }
+
+        // Handle Login Submission
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const u = document.getElementById('username').value.trim();
+            const p = document.getElementById('password').value.trim();
+
+            if (u === HARDCODED_USER && p === HARDCODED_PASS) {
+                localStorage.setItem('isAdminLoggedIn', 'true');
+                showPanel();
+            } else {
+                loginError.style.display = 'block';
+            }
+        });
+
+        function showPanel() {
+            loginSection.classList.add('hidden');
+            adminPanel.classList.remove('hidden');
+            loginError.style.display = 'none';
+        }
+
+        function logoutAdmin() {
+            localStorage.removeItem('isAdminLoggedIn');
+            location.reload();
+        }
+
+        // Handle Adding Blogs
+        document.getElementById('addBlogForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const title = document.getElementById('blogTitle').value;
+            const content = document.getElementById('blogContent').value;
+
+            const blogs = JSON.parse(localStorage.getItem('blogs') || '[]');
+            blogs.unshift({ title, content, date: new Date().toLocaleDateString(), author: "Kaya Fungo Safaris" });
+            localStorage.setItem('blogs', JSON.stringify(blogs));
+
+            alert('Blog post published!');
+            this.reset();
+        });
+
+        // Handle Adding Media
+        document.getElementById('addMediaForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const type = document.getElementById('mediaType').value;
+            const url = document.getElementById('mediaUrl').value;
+            const caption = document.getElementById('mediaCaption').value;
+
+            const media = JSON.parse(localStorage.getItem('site_media') || '[]');
+            media.unshift({ type, url, caption });
+            localStorage.setItem('site_media', JSON.stringify(media));
+
+            alert('Media added to gallery!');
+            this.reset();
+        });
+    </script>
+
 </body>
 </html>
