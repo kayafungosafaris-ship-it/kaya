@@ -1,0 +1,127 @@
+const express = require('express');
+const mongoose = require('mongoose');
+const session = require('express-session');
+const multer = require('multer');
+const path = require('path');
+require('dotenv').config();
+
+const app = express();
+
+// Hardcoded Admin Credentials as requested
+const ADMIN_USERNAME = 'admin';
+const ADMIN_PASSWORD = 'Kishenga'; 
+
+// Middleware
+app.set('view engine', 'ejs');
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(session({
+  secret: 'kayafungo_secret_key_123',
+  resave: false,
+  saveUninitialized: false
+}));
+
+// Local File Upload Config
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, 'public/uploads/'),
+  filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
+});
+const upload = multer({ storage });
+
+// Database Schemas (Fallback to In-Memory arrays if DB not connected)
+const blogSchema = new mongoose.Schema({
+  title: String,
+  content: String,
+  author: { type: String, default: 'Kaya Fungo Safaris' },
+  createdAt: { type: Date, default: Date.now }
+});
+const Blog = mongoose.model('Blog', blogSchema);
+
+const mediaSchema = new mongoose.Schema({
+  filename: String,
+  mediaType: String, // 'image' or 'video'
+  createdAt: { type: Date, default: Date.now }
+});
+const Media = mongoose.model('Media', mediaSchema);
+
+// Auth Middleware
+const requireAdmin = (req, res, next) => {
+  if (req.session && req.session.isAdmin) return next();
+  res.redirect('/admin/login');
+};
+
+// --- ROUTES ---
+
+// Home Page
+app.get('/', async (req, res) => {
+  const gallery = await Media.find().sort({ createdAt: -1 }).catch(() => []);
+  res.render('index', { gallery });
+});
+
+// Blog Page
+app.get('/blog', async (req, res) => {
+  const blogs = await Blog.find().sort({ createdAt: -1 }).catch(() => []);
+  res.render('blog', { blogs });
+});
+
+// Contact Us Page
+app.get('/contact', (req, res) => res.render('contact'));
+
+// Places to Visit Page
+app.get('/places', (req, res) => res.render('places'));
+
+// Admin Login
+app.get('/admin/login', (req, res) => res.render('admin-login', { error: null }));
+
+app.post('/admin/login', (req, res) => {
+  const { username, password } = req.body;
+  if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+    req.session.isAdmin = true;
+    return res.redirect('/admin/dashboard');
+  }
+  res.render('admin-login', { error: 'Invalid admin credentials' });
+});
+
+app.get('/admin/logout', (req, res) => {
+  req.session.destroy();
+  res.redirect('/');
+});
+
+// Admin Dashboard
+app.get('/admin/dashboard', requireAdmin, async (req, res) => {
+  const blogs = await Blog.find().sort({ createdAt: -1 }).catch(() => []);
+  const gallery = await Media.find().sort({ createdAt: -1 }).catch(() => []);
+  res.render('admin-dashboard', { blogs, gallery });
+});
+
+// Create Blog Post
+app.post('/admin/blog', requireAdmin, async (req, res) => {
+  const { title, content } = req.body;
+  await Blog.create({ title, content });
+  res.redirect('/admin/dashboard');
+});
+
+// Upload Media (Photos / Videos)
+app.post('/admin/upload', requireAdmin, upload.single('file'), async (req, res) => {
+  if (!req.file) return res.redirect('/admin/dashboard');
+  
+  const isVideo = req.file.mimetype.startsWith('video/');
+  await Media.create({
+    filename: req.file.filename,
+    mediaType: isVideo ? 'video' : 'image'
+  });
+  
+  res.redirect('/admin/dashboard');
+});
+
+// Start Server & Connect Database
+const PORT = process.env.PORT || 3000;
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/kayafungo';
+
+mongoose.connect(MONGO_URI)
+  .then(() => console.log('MongoDB Connected'))
+  .catch(err => console.log('Running without active MongoDB instance (Local mode)'));
+
+app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
