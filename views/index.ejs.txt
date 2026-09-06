@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Welcome to Kaya Fungo Tour & Safari</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <header class="top-bar">
+    <a href="/" class="site-title">Kaya Fungo Tour & Safari</a>
+    <nav class="nav-links">
+      <a href="/blog">Blog</a>
+      <a href="#">Bookings</a>
+      <a href="/contact">Contact us</a>
+      <a href="/places">Places to visit</a>
+    </nav>
+  </header>
+
+  <section class="hero-section">
+    <h1 class="hero-title">Welcome to Kaya Fungo<br>Tour & Safari</h1>
+    <a href="/places" class="cta-btn">Discover amazing destinations and experiences</a>
+  </section>
+
+  <!-- Homepage Grid Image Showcase -->
+  <section class="grid-3">
+    <img src="/images/image1.png" alt="Safari Wildlife">
+    <img src="/images/image2.png" alt="Safari Wildlife">
+    <img src="/images/image3.png" alt="Safari Wildlife">
+    <img src="/images/image4.png" alt="Safari Culture">
+    <img src="/images/image5.png" alt="Safari Culture">
+    <img src="/images/image6.png" alt="Safari Culture">
+  </section>
+
+  <!-- Admin Uploaded Dynamic Gallery -->
+  <% if (gallery && gallery.length > 0) { %>
+    <h2 style="text-align: center; margin-top: 40px;">Recent Media Uploads</h2>
+    <section class="grid-3">
+      <% gallery.forEach(item => { %>
+        <% if (item.mediaType === 'image') { %>
+          <img src="/uploads/<%= item.filename %>" alt="Uploaded photo">
+        <% } else { %>
+          <video controls src="/uploads/<%= item.filename %>"></video>
+        <% } %>
+      <% }) %>
+    </section>
+  <% } %>
+
+  <footer class="footer">
+    <h3>Kaya Fungo Tour & Safari</h3>
+    <p>Offering high quality safari experience within East Africa, in particular Kenya. We help you to find your dream trip and relax during your holiday.</p>
+    <div class="footer-nav">
+      <a href="/blog">Blog</a>
+      <a href="#">Events</a>
+      <a href="#">About</a>
+      <a href="#">Shop</a>
+    </div>
+  </footer>
+
+</body>
+</html>
