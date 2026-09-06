@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head><title>Admin Dashboard</title><link rel="stylesheet" href="/css/style.css"></head>
+<body style="padding: 40px 5%;">
+  <h2>Admin Control Panel</h2>
+  <a href="/admin/logout">Logout</a>
+  
+  <hr style="margin:20px 0;">
+
+  <h3>Add Blog Post</h3>
+  <form action="/admin/blog" method="POST" style="max-width:500px; margin-bottom: 40px;">
+    <p><input type="text" name="title" placeholder="Blog Title" required style="width:100%; padding:8px;"></p>
+    <p><textarea name="content" placeholder="Blog Content" rows="5" required style="width:100%; padding:8px;"></textarea></p>
+    <button type="submit" class="cta-btn">Publish Post</button>
+  </form>
+
+  <h3>Upload Photos / Videos</h3>
+  <form action="/admin/upload" method="POST" enctype="multipart/form-data" style="max-width:500px;">
+    <p><input type="file" name="file" accept="image/*,video/*" required></p>
+    <button type="submit" class="cta-btn">Upload Media</button>
+  </form>
+</body>
+</html>

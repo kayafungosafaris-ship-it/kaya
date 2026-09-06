@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Places to visit - Kaya Fungo Tour & Safari</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo">
+            <h1>Kaya Fungo Tour & Safari</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="places.html#bookings" class="active">Bookings</a></li>
+                <li><a href="contact.html">Contact us</a></li>
+                <li><a href="places.html" class="active">Places to visit</a></li>
+                <li><a href="index.html">Welcome to Kaya Fungo Tour & Safari</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="destination-container">
+        <section class="places-header">
+            <h2>Places to visit</h2>
+        </section>
+
+        <!-- Destination Cards matching screenshots -->
+        <section class="destinations-grid">
+            <div class="destination-card">
+                <div class="destination-info">
+                    <h3>Ethiopia</h3>
+                    <button class="book-now-btn" onclick="openBookingModal('Ethiopia')">Book now</button>
+                </div>
+            </div>
+
+            <div class="destination-card">
+                <div class="destination-info">
+                    <h3>Tsavo East & Amboseli National Park</h3>
+                    <button class="book-now-btn" onclick="openBookingModal('Tsavo East & Amboseli')">Book now</button>
+                </div>
+            </div>
+
+            <div class="destination-card">
+                <div class="destination-info">
+                    <h3>Maasai Mara Reserve</h3>
+                    <button class="book-now-btn" onclick="openBookingModal('Maasai Mara')">Book now</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Booking Form Section -->
+        <section id="bookings" class="booking-section">
+            <h2>Book Your Tour</h2>
+            <form id="tour-booking-form" class="booking-form">
+                <div class="form-group">
+                    <label for="destination">Selected Destination</label>
+                    <input type="text" id="destination" name="destination" placeholder="e.g. Tsavo East & Amboseli" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="full-name">Full Name</label>
+                    <input type="text" id="full-name" required placeholder="Enter your full name">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" required placeholder="kayafungosafaris@gmail.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" required placeholder="+254 738 550053">
+                </div>
+
+                <div class="form-group">
+                    <label for="travel-date">Travel Date</label>
+                    <input type="date" id="travel-date" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="guests">Number of Guests</label>
+                    <input type="number" id="guests" min="1" value="1" required>
+                </div>
+
+                <button type="submit" class="submit-btn">Confirm Booking</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <h3>Kaya Fungo Tour & Safari</h3>
+            <p>Offering high quality safari experience with in east Africa In particular Kenya. We help you to find your dream trip and relax during your holiday</p>
+            <ul class="footer-links">
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="#">Events</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Shop</a></li>
+                <li><a href="#">FAQS</a></li>
+            </ul>
+        </div>
+    </footer>
+
+    <script>
+        function openBookingModal(destinationName) {
+            document.getElementById('destination').value = destinationName;
+            document.getElementById('bookings').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        document.getElementById('tour-booking-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Thank you for booking with Kaya Fungo Tour & Safari! We will contact you shortly via email/phone.');
+            this.reset();
+        });
+    </script>
+</body>
+</html>

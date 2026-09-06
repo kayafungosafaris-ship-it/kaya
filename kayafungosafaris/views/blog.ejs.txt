@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Blog - Kaya Fungo Tour & Safari</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <header class="top-bar">
+    <a href="/" class="site-title">Kaya Fungo Tour & Safari</a>
+    <nav class="nav-links">
+      <a href="/blog">Blog</a>
+      <a href="#">Bookings</a>
+      <a href="/contact">Contact us</a>
+      <a href="/places">Places to visit</a>
+    </nav>
+  </header>
+
+  <main style="padding: 40px 5%; max-width: 800px; margin: 0 auto;">
+    <h1>Blog</h1>
+    
+    <% if (blogs.length === 0) { %>
+      <article>
+        <h2>just dream of holiday kenya for its wildlife park</h2>
+        <p style="color: #666;">by Kaya Fungo Safaris — October 31, 2025</p>
+        <p>we have a package for this holiday book earlier. experience the wildlife like never before. join us for adventure and event any unforgettable safari to tsavo east and amboseli national park this is for three days departing from mombasa.</p>
+      </article>
+    <% } else { %>
+      <% blogs.forEach(post => { %>
+        <article style="margin-bottom: 40px;">
+          <h2><%= post.title %></h2>
+          <p style="color: #666;">by <%= post.author %> — <%= new Date(post.createdAt).toDateString() %></p>
+          <p><%= post.content %></p>
+        </article>
+      <% }) %>
+    <% } %>
+  </main>
+
+</body>
+</html>
